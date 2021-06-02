@@ -133,16 +133,24 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
             certificate_available_date=datetime.now(pytz.UTC) - timedelta(days=2)
         )
 
+        GeneratedCertificateFactory.create(
+            user=self.student,
+            course_id=self.course.id,
+            status=CertificateStatuses.downloadable,
+            mode='verified'
+        )
+
         self.request_factory = RequestFactory()
 
     def test_cert_status_with_generating(self):
+        cert_user = UserFactory()
         GeneratedCertificateFactory.create(
-            user=self.student,
+            user=cert_user,
             course_id=self.course.id,
             status=CertificateStatuses.generating,
             mode='verified'
         )
-        assert certificate_downloadable_status(self.student, self.course.id) ==\
+        assert certificate_downloadable_status(cert_user, self.course.id) ==\
                {'is_downloadable': False,
                 'is_generating': True,
                 'is_unverified': False,
@@ -150,14 +158,15 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
                 'uuid': None}
 
     def test_cert_status_with_error(self):
+        cert_user = UserFactory()
         GeneratedCertificateFactory.create(
-            user=self.student,
+            user=cert_user,
             course_id=self.course.id,
             status=CertificateStatuses.error,
             mode='verified'
         )
 
-        assert certificate_downloadable_status(self.student, self.course.id) ==\
+        assert certificate_downloadable_status(cert_user, self.course.id) ==\
                {'is_downloadable': False,
                 'is_generating': True,
                 'is_unverified': False,
@@ -177,15 +186,16 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
         Verifies certificate_downloadable_status returns the
         correct response for PDF certificates.
         """
+        cert_user = UserFactory()
         cert = GeneratedCertificateFactory.create(
-            user=self.student,
+            user=cert_user,
             course_id=self.course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
             download_url='www.google.com',
         )
 
-        assert certificate_downloadable_status(self.student, self.course.id) ==\
+        assert certificate_downloadable_status(cert_user, self.course.id) ==\
                {'is_downloadable': True,
                 'is_generating': False,
                 'is_unverified': False,
@@ -202,11 +212,6 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
 
     @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
     def test_with_downloadable_web_cert(self):
-        CourseEnrollment.enroll(self.student, self.course.id, mode='honor')
-        self._setup_course_certificate()
-        with mock_passing_grade():
-            generate_user_certificates(self.student, self.course.id)
-
         cert_status = certificate_status_for_student(self.student, self.course.id)
         assert certificate_downloadable_status(self.student, self.course.id) ==\
                {'is_downloadable': True,
@@ -232,10 +237,7 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
         self.course.certificate_available_date = cert_avail_date
         self.course.save()
 
-        CourseEnrollment.enroll(self.student, self.course.id, mode='honor')
         self._setup_course_certificate()
-        with mock_passing_grade():
-            generate_user_certificates(self.student, self.course.id)
 
         downloadable_status = certificate_downloadable_status(self.student, self.course.id)
         assert downloadable_status['is_downloadable'] == cert_downloadable_status
@@ -548,66 +550,17 @@ class GenerateUserCertificatesTest(EventTestMixin, WebCertificateTestMixin, Modu
         self.enrollment = CourseEnrollment.enroll(self.student, self.course.id, mode='honor')
         self.request_factory = RequestFactory()
 
-    def test_new_cert_requests_into_xqueue_returns_generating(self):
-        with mock_passing_grade():
-            with self._mock_queue():
-                generate_user_certificates(self.student, self.course.id)
-
-        # Verify that the certificate has status 'generating'
-        cert = GeneratedCertificate.eligible_certificates.get(user=self.student, course_id=self.course.id)
-        assert cert.status == CertificateStatuses.generating
-        self.assert_event_emitted(
-            'edx.certificate.created',
-            user_id=self.student.id,
-            course_id=str(self.course.id),
-            certificate_url=get_certificate_url(self.student.id, self.course.id),
-            certificate_id=cert.verify_uuid,
-            enrollment_mode=cert.mode,
-            generation_mode='batch'
-        )
-
-    def test_xqueue_submit_task_error(self):
-        with mock_passing_grade():
-            with self._mock_queue(is_successful=False):
-                generate_user_certificates(self.student, self.course.id)
-
-        # Verify that the certificate has been marked with status error
-        cert = GeneratedCertificate.eligible_certificates.get(user=self.student, course_id=self.course.id)
-        assert cert.status == CertificateStatuses.error
-        assert self.ERROR_REASON in cert.error_reason
-
-    def test_generate_user_certificates_with_unverified_cert_status(self):
-        """
-        Generate user certificate when the certificate is unverified
-        will trigger an update to the certificate if the user has since
-        verified.
-        """
-        self._setup_course_certificate()
-        # generate certificate with unverified status.
-        GeneratedCertificateFactory.create(
-            user=self.student,
-            course_id=self.course.id,
-            status=CertificateStatuses.unverified,
-            mode='verified'
-        )
-
-        with mock_passing_grade():
-            with self._mock_queue():
-                status = generate_user_certificates(self.student, self.course.id)
-                assert status == CertificateStatuses.generating
-
     @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
-    def test_new_cert_requests_returns_generating_for_html_certificate(self):
+    def test_new_cert_request_for_html_certificate(self):
         """
-        Test no message sent to Xqueue if HTML certificate view is enabled
+        Test generate_user_certificates with HTML certificates
         """
         self._setup_course_certificate()
         with mock_passing_grade():
             generate_user_certificates(self.student, self.course.id)
 
-        # Verify that the certificate has status 'downloadable'
         cert = GeneratedCertificate.eligible_certificates.get(user=self.student, course_id=self.course.id)
-        assert cert.status == CertificateStatuses.downloadable
+        assert cert.status == CertificateStatuses.unverified
 
     @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': False})
     def test_cert_url_empty_with_invalid_certificate(self):
