@@ -16,7 +16,10 @@ from ..toggles import USE_FOR_OUTLINES
 
 def can_call_public_api(requesting_user, course_key):
     """
+    Global staff can always call the public API. Otherwise, check waffle flag.
 
+    This is only intended for rollout purposes, and eventually everyone will be
+    able to call the public API for all courses.
     """
     return GlobalStaff().has_user(requesting_user) or USE_FOR_OUTLINES.is_enabled(course_key)
 

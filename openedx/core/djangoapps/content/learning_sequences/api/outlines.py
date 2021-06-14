@@ -63,21 +63,6 @@ __all__ = [
 ]
 
 
-def public_api_available(course_key: CourseKey, user: types.User) -> bool:
-    """
-    Is the Public API availalbe for this Course to this User?
-
-    This only really exists while we do the waffle-flag rollout of this feature,
-    so that in-process callers from other apps can determine whether they should
-    trust Learning Sequences API data for a particular user/course.
-    """
-    return (
-        key_supports_outlines(course_key) and
-        LearningContext.objects.filter(context_key=course_key).exists() and
-        can_call_public_api(user, course_key)
-    )
-
-
 def key_supports_outlines(opaque_key: OpaqueKey) -> bool:
     """
     Does this key-type support outlines?
@@ -98,6 +83,21 @@ def key_supports_outlines(opaque_key: OpaqueKey) -> bool:
         return not opaque_key.deprecated
 
     return False
+
+
+def public_api_available(course_key: CourseKey, user: types.User) -> bool:
+    """
+    Is the Public API availalbe for this Course to this User?
+
+    This only really exists while we do the waffle-flag rollout of this feature,
+    so that in-process callers from other apps can determine whether they should
+    trust Learning Sequences API data for a particular user/course.
+    """
+    return (
+        key_supports_outlines(course_key) and
+        LearningContext.objects.filter(context_key=course_key).exists() and
+        can_call_public_api(user, course_key)
+    )
 
 
 @function_trace('learning_sequences.api.get_course_keys_with_outlines')
