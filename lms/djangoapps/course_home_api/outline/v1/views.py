@@ -38,9 +38,9 @@ from lms.djangoapps.courseware.courses import get_course_date_blocks, get_course
 from lms.djangoapps.courseware.date_summary import TodaysDate
 from lms.djangoapps.courseware.masquerade import is_masquerading, setup_masquerade
 from lms.djangoapps.courseware.views.views import get_cert_data
-from openedx.core.djangoapps.content.learning_sequences.api import get_user_course_outline
-from openedx.core.djangoapps.content.learning_sequences.api.permissions import (
-    can_call_public_api as can_call_learning_sequences_api
+from openedx.core.djangoapps.content.learning_sequences.api import (
+    get_user_course_outline,
+    public_api_available as learning_sequences_api_available,
 )
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.lib.api.authentication import BearerAuthenticationAllowInactiveUser
@@ -290,7 +290,7 @@ class OutlineTabView(RetrieveAPIView):
         #
         # The long term goal is to remove the Course Blocks API call entirely,
         # so this is a tiny first step in that migration.
-        if course_blocks and can_call_learning_sequences_api(request.user, course_key):
+        if course_blocks and learning_sequences_api_available(course_key, request.user):
             user_course_outline = get_user_course_outline(
                 course_key, request.user, datetime.now(tz=timezone.utc)
             )
@@ -299,7 +299,7 @@ class OutlineTabView(RetrieveAPIView):
                 chapter_data['children'] = [
                     seq_data
                     for seq_data in chapter_data['children']
-                    if seq_data['id'] in available_seq_ids
+                    if seq_data['id'] in available_seq_ids or seq_data['type'] != 'sequential'
                 ]
 
         data = {
