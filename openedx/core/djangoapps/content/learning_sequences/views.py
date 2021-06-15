@@ -32,7 +32,6 @@ class CourseOutlineView(APIView):
     # We want to eventually allow unauthenticated users to use this as well...
     authentication_classes = (JwtAuthentication, SessionAuthenticationAllowInactiveUser)
 
-
     class UserCourseOutlineDataSerializer(serializers.BaseSerializer):  # lint-amnesty, pylint: disable=abstract-method
         """
         Read-only serializer for CourseOutlineData for this endpoint.

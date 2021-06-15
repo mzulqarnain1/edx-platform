@@ -295,11 +295,20 @@ class OutlineTabView(RetrieveAPIView):
                 course_key, request.user, datetime.now(tz=timezone.utc)
             )
             available_seq_ids = {str(usage_key) for usage_key in user_course_outline.sequences}
+
+            # course_blocks is a reference to the root of the course, so we go
+            # through the chapters (sections) to look for sequences to remove.
             for chapter_data in course_blocks['children']:
                 chapter_data['children'] = [
                     seq_data
                     for seq_data in chapter_data['children']
-                    if seq_data['id'] in available_seq_ids or seq_data['type'] != 'sequential'
+                    if (
+                        seq_data['id'] in available_seq_ids or
+                        # Edge case: Sometimes we have weird course structures.
+                        # We expect only sequentials here, but if there is
+                        # another type, just skip it (don't filter it out).
+                        seq_data['type'] != 'sequential'
+                    )
                 ]
 
         data = {

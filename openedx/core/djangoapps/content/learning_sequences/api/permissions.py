@@ -35,5 +35,3 @@ def can_see_all_content(requesting_user, course_key):
         CourseStaffRole(course_key).has_user(requesting_user) or
         CourseInstructorRole(course_key).has_user(requesting_user)
     )
-
-
