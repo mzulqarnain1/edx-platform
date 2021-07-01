@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  run_tests:
+    name: Unit Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-20.04 ]
+        python-version: [ 3.8 ]
+        system: [ lms, cms, common, openedx ]
+        shard: [1,2,3]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Required Packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxmlsec1-dev lynx
+
+    - name: Get pip cache dir
+      id: pip-cache-dir
+      run: |
+        echo "::set-output name=dir::$(pip cache dir)"
+
+    - name: Cache pip dependencies
+      id: cache-dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/edx/development.txt') }}
+        restore-keys: ${{ runner.os }}-pip-
+
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements/pip.txt
+        pip install -r requirements/edx/development.txt
+        pip install pytest-split
+
+    - name: Initiate Services
+      run: |
+        sudo systemctl start mongod
+
+    - name: Run Tests
+      continue-on-error: true
+      env:
+        GROUP: ${{ matrix.shard }}
+        SYSTEM: ${{ matrix.system }}
+        LMS_CFG: lms/envs/bok_choy.yml
+      run: |
+        pytest $SYSTEM --splits 3 --group $GROUP

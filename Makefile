@@ -119,6 +119,9 @@ docker_build:
 	docker build . -f Dockerfile --target lms -t openedx/edx-platform
 	docker build . -f Dockerfile --target lms-newrelic -t openedx/edx-platform:latest-newrelic
 
+docker_build_test:
+	docker-compose -f Test.docker-compose.yml up
+
 docker_tag: docker_build
 	docker tag openedx/edx-platform openedx/edx-platform:${GITHUB_SHA}
 	docker tag openedx/edx-platform:latest-newrelic openedx/edx-platform:${GITHUB_SHA}-newrelic
