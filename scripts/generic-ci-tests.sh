@@ -52,7 +52,7 @@ SHARD=${SHARD:="all"}
 NUMBER_OF_BOKCHOY_THREADS=${NUMBER_OF_BOKCHOY_THREADS:=1}
 
 # Clean up previous builds
-git clean -qxfd || true
+git clean -qxfd
 
 function emptyxunit {
 
