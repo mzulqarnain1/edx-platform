@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  pull_request:
   push:
     branches:
       - master
@@ -29,7 +30,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        test-system: [ lms, cms, common, openedx ]
+        test-system: [ cms ]
 
     steps:
     - uses: actions/checkout@v2
@@ -46,3 +47,4 @@ jobs:
       run: |
         docker images
         make docker_build_test
+        docker run edx-platform_edxapp bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
