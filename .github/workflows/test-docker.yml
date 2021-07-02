@@ -47,4 +47,4 @@ jobs:
       run: |
         docker images
         make docker_build_test
-        docker run edx-platform_edxapp bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
+        docker run edx-platform_edxapp_1 bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
