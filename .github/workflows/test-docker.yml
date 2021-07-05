@@ -48,8 +48,8 @@ jobs:
         SHARD: ${{ matrix.shard }}
       run: |
         docker images
-        echo TEST_SYSTEM=${{ matrix.test-system }} >> .env
-        echo SHARD=${{ matrix.shard }} >> .env
+        echo TEST_SYSTEM=$TEST_SYSTEM >> .env
+        echo SHARD=$SHARD >> .env
         echo SPLITS=2 >> .env
         cat .env
         docker-compose --env-file .env -f test.docker-compose.yml up
