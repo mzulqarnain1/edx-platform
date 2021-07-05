@@ -61,4 +61,5 @@ jobs:
       env:
         LMS_CFG: lms/envs/bok_choy.yml
       run: |
-        pytest ${{ matrix.system }} --splits 3 --group ${{ matrix.shard }}
+        pytest ${{ matrix.system }} --ds=openedx.tests.settings --splits 3 --group ${{ matrix.shard }}
+#        pytest ${{ matrix.system }} --splits 3 --group ${{ matrix.shard }}
