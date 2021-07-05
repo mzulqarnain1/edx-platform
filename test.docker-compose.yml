@@ -38,10 +38,11 @@ services:
 
   edxapp:
     # command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && paver test_system -s cms --disable_capture'
-    command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
+    command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM --splits 3 --group $SHARD'
     image: ghcr.io/mzulqarnain1/edxapp:testing
     environment:
       TEST_SYSTEM: ${TEST_SYSTEM:-lms}
+      SHARD: ${SHARD:-lms}
       EDXAPP_TEST_MONGO_HOST: edx.devstack.mongo
       NO_PYTHON_UNINSTALL: 1
     depends_on:

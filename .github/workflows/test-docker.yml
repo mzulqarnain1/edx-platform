@@ -30,7 +30,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        test-system: [ cms ]
+        test-system: [ cms, common, lms, openedx ]
+        shard: [ 1, 2, 3 ]
 
     steps:
     - uses: actions/checkout@v2
@@ -43,6 +44,7 @@ jobs:
     - name: Run Tests Docker Image
       env:
         TEST_SYSTEM: ${{ matrix.test-system }}
+        SHARD: ${{ matrix.shard }}
       run: |
         docker images
         docker-compose -f test.docker-compose.yml up
