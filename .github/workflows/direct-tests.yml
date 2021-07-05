@@ -16,7 +16,7 @@ jobs:
         os: [ ubuntu-20.04 ]
         python-version: [ 3.8 ]
       #system: [ cms, common, lms, openedx ]
-        system: [ common, common/lib ]
+        system: [ common ]
         shard: [ 1, 2, 3 ]
 
     steps:
