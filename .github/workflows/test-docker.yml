@@ -7,27 +7,27 @@ on:
       - master
 
 jobs:
-  build_and_publish:
-    name: Docker Image
-    runs-on: ubuntu-20.04
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Create Docker Image
-      run: |
-        docker build -t edxapp_test -f Test.Dockerfile .
-        docker tag edxapp_test ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA}
-
-    - name: Upload Docker Image
-      run: |
-        echo ${{ secrets.CR_PASSWORD }} | docker login ghcr.io -u mzulqarnain1 --password-stdin
-        docker push ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA}
+#  build_and_publish:
+#    name: Docker Image
+#    runs-on: ubuntu-20.04
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Create Docker Image
+#      run: |
+#        docker build -t edxapp_test -f Test.Dockerfile .
+#        docker tag edxapp_test ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA}
+#
+#    - name: Upload Docker Image
+#      run: |
+#        echo ${{ secrets.CR_PASSWORD }} | docker login ghcr.io -u mzulqarnain1 --password-stdin
+#        docker push ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA}
 
   run-tests:
     name: Unit Tests
-    needs: build_and_publish
-    runs-on: ubuntu-18.04
+    #needs: build_and_publish
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         test-system: [ cms ]
@@ -38,7 +38,7 @@ jobs:
     - name: Download Docker Image
       run: |
         echo ${{ secrets.CR_PASSWORD }} | docker login ghcr.io -u mzulqarnain1 --password-stdin
-        docker pull ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA}
+        docker pull ghcr.io/mzulqarnain1/edxapp:c7ecc0b6d1e240e53d1c99fb96cb43843d577e19
 
     - name: Initiate Services
       run: |
@@ -49,4 +49,4 @@ jobs:
         EDXAPP_TEST_MONGO_HOST: "host.docker.internal"
       run: |
         docker images
-        docker run --env TEST_SYSTEM=${{ matrix.test-system }} --env EDXAPP_TEST_MONGO_HOST="host.docker.internal" ghcr.io/mzulqarnain1/edxapp:${GITHUB_SHA} bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
+        docker run --env TEST_SYSTEM=${{ matrix.test-system }} --env EDXAPP_TEST_MONGO_HOST="host.docker.internal" ghcr.io/mzulqarnain1/edxapp:c7ecc0b6d1e240e53d1c99fb96cb43843d577e19 bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
