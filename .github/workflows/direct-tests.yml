@@ -16,7 +16,7 @@ jobs:
         os: [ ubuntu-20.04 ]
         python-version: [ 3.8 ]
         system: [ cms, common, lms, openedx ]
-        shard: [ 1, 2, 3 ]
+        #shard: [ 1, 2, 3 ]
 
     steps:
     - name: Checkout repo
@@ -60,4 +60,5 @@ jobs:
       env:
         LMS_CFG: lms/envs/bok_choy.yml
       run: |
-        pytest ${{ matrix.system }} --splits 3 --group ${{ matrix.shard }}
+      #  pytest ${{ matrix.system }} --splits 3 --group ${{ matrix.shard }}
+        pytest ${{ matrix.system }}

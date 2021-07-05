@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         test-system: [ cms, common, lms, openedx ]
-        shard: [ 1, 2, 3 ]
+        #shard: [ 1, 2, 3 ]
 
     steps:
     - uses: actions/checkout@v2
@@ -42,9 +42,10 @@ jobs:
         docker pull ghcr.io/mzulqarnain1/edxapp:testing
 
     - name: Run Tests Docker Image
+      continue-on-error: true
       env:
         TEST_SYSTEM: ${{ matrix.test-system }}
-        SHARD: ${{ matrix.shard }}
+        #SHARD: ${{ matrix.shard }}
       run: |
         docker images
         docker-compose -f test.docker-compose.yml up
