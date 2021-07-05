@@ -48,5 +48,5 @@ jobs:
         echo SHARD=${{ matrix.shard }} >> .env
         echo SPLITS=2 >> .env
         cat .env
-        docker-compose --env-file .env -f test.docker-compose.yml up
+        docker-compose --env-file .env -f test.docker-compose.yml up --abort-on-container-exit
       # docker run --env TEST_SYSTEM=${{ matrix.test-system }} --env EDXAPP_TEST_MONGO_HOST="host.docker.internal" ghcr.io/mzulqarnain1/edxapp:testing bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
