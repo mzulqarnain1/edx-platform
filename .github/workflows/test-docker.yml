@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        test-system: [ cms ]
-        #shard: [ 1, 2, 3 ]
+        system: [ cms, common, lms, openedx ]
+        shard: [ 1, 2 ]
 
     steps:
     - uses: actions/checkout@v2
@@ -45,8 +45,10 @@ jobs:
       continue-on-error: true
       env:
         TEST_SYSTEM: ${{ matrix.test-system }}
-        #SHARD: ${{ matrix.shard }}
+        SHARD: ${{ matrix.shard }}
       run: |
         docker images
-        docker-compose -f test.docker-compose.yml up
+        echo TEST_SYSTEM=${{ matrix.test-system }}\\nSHARD=${{ matrix.shard }}\\nSPLITS=2 > .env
+        cat .env
+        docker-compose --env-file .env -f test.docker-compose.yml up
       # docker run --env TEST_SYSTEM=${{ matrix.test-system }} --env EDXAPP_TEST_MONGO_HOST="host.docker.internal" ghcr.io/mzulqarnain1/edxapp:testing bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
