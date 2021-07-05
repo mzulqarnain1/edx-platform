@@ -1,25 +1,6 @@
 version: '3'
 
 services:
-  mysql:
-    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
-    container_name: "edx.devstack.mysql"
-    hostname: mysql.devstack.edx
-    environment:
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    image: mysql:5.7
-    logging:
-      driver: none
-    networks:
-      default:
-        aliases:
-          - edx.devstack.mysql
-    ports:
-      - "3506:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   mongo:
     command: mongod --smallfiles --nojournal --storageEngine wiredTiger
     container_name: "edx.devstack.mongo"
@@ -47,9 +28,7 @@ services:
       EDXAPP_TEST_MONGO_HOST: edx.devstack.mongo
       NO_PYTHON_UNINSTALL: 1
     depends_on:
-      - mysql
       - mongo
 
 volumes:
   mongo_data:
-  mysql_data:
