@@ -10,10 +10,9 @@ on:
 jobs:
   run_tests:
     name: Unit Tests
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: [ ubuntu-20.04 ]
         include:
           - module-name: lms-1
             path: "lms/djangoapps/badges/ lms/djangoapps/branding/ lms/djangoapps/bulk_email/ lms/djangoapps/bulk_enroll/ lms/djangoapps/bulk_user_retirement/ lms/djangoapps/ccx/ lms/djangoapps/certificates/ lms/djangoapps/commerce/"
@@ -39,11 +38,6 @@ jobs:
             path: "common/djangoapps/"
           - module-name: common-2
             path: "common/lib/"
-#      matrix:
-#        os: [ ubuntu-20.04 ]
-#        python-version: [ 3.8 ]
-#        system: [ cms, common, openedx ]
-#        shard: [ 1, 2, 3 ]
 
     steps:
     - name: Checkout repo
@@ -64,13 +58,6 @@ jobs:
       run: |
         echo "::set-output name=dir::$(pip cache dir)"
 
-    - name: Cache pip dependencies
-      id: cache-dependencies
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.pip-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/edx/development.txt') }}
-        restore-keys: ${{ runner.os }}-pip-
 
     - name: Install Python dependencies
       run: |
