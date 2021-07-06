@@ -57,5 +57,5 @@ jobs:
     steps:
       - run: |
           echo In Container
-          bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && ls -l && cd /edx/app/edxapp/edx-platform && pytest cms/djangoapps/api/v1/tests/test_views/test_course_runs.py'
+          bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && ls -l && cd /edx/app/edxapp/edx-platform && pytest cms/djangoapps/api/v1/tests/test_views/test_course_runs.py::CourseRunViewSetTests::get_course_run_data'
         name: Run in container
