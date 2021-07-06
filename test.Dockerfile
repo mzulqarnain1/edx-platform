@@ -75,7 +75,6 @@ COPY requirements/pip.txt requirements/pip.txt
 COPY requirements/edx/testing.txt requirements/edx/testing.txt
 RUN pip install -r requirements/pip.txt
 RUN pip install -r requirements/edx/testing.txt
-RUN pip install pytest-split
 
 COPY lms/envs/bok_choy.yml /edx/etc/lms.yml
 COPY lms/envs/bok_choy.yml /edx/etc/studio.yml
