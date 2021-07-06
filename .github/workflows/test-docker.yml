@@ -56,5 +56,6 @@ jobs:
     container: ghcr.io/mzulqarnain1/edxapp:testing
     steps:
       - run: |
-          bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest cms --splits 2 --group 1'
+          echo In Container
+          bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && ls -l && cd /edx/app/edxapp/edx-platform && pytest cms --splits 2 --group 1'
         name: Run in container
