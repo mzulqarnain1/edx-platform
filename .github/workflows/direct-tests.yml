@@ -13,6 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ ubuntu-20.04 ]
         include:
           - module-name: lms-1
             path: "lms/djangoapps/badges/ lms/djangoapps/branding/ lms/djangoapps/bulk_email/ lms/djangoapps/bulk_enroll/ lms/djangoapps/bulk_user_retirement/ lms/djangoapps/ccx/ lms/djangoapps/certificates/ lms/djangoapps/commerce/"
