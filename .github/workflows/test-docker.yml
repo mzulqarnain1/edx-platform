@@ -56,7 +56,5 @@ jobs:
     container: ghcr.io/mzulqarnain1/edxapp:testing
     steps:
       - run: |
-          echo ${{ secrets.CR_PASSWORD }} | docker login ghcr.io -u mzulqarnain1 --password-stdin
-          echo This job does specify a container.
-          echo It runs in the container instead of the VM.
+          source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest cms --splits 2 --group 1
         name: Run in container
