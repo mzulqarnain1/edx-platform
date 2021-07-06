@@ -65,13 +65,12 @@ jobs:
       run: |
         pip install -r requirements/pip.txt
         pip install -r requirements/edx/development.txt
-        pip install pytest-split
 
     - name: Initiate Services
       run: |
         sudo systemctl start mongod
 
-    - name: python ${{ matrix.module-name }} Tests
+    - name: Python Tests ${{ matrix.module-name }}
       continue-on-error: true
       env:
         LMS_CFG: lms/envs/bok_choy.yml
