@@ -9,7 +9,7 @@ on:
 
 jobs:
   run_tests:
-    name: Unit Tests
+    name: Unit Tests Direct
     runs-on: ubuntu-20.04
     strategy:
       matrix:

@@ -25,7 +25,7 @@ jobs:
 #        docker push ghcr.io/mzulqarnain1/edxapp:testing
 
   run-tests:
-    name: Unit Tests
+    name: Unit Tests In Docker
     #needs: build_and_publish
     runs-on: ubuntu-20.04
     strategy:
