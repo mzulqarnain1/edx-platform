@@ -53,11 +53,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libxmlsec1-dev lynx
 
-    - name: Get pip cache dir
-      id: pip-cache-dir
-      run: |
-        echo "::set-output name=dir::$(pip cache dir)"
-
+    - name: Cache pip dependencies
+      id: cache-dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/edx/development.txt') }}
+        restore-keys: ${{ runner.os }}-pip-
 
     - name: Install Python dependencies
       run: |
