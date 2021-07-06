@@ -28,10 +28,10 @@ jobs:
     name: Unit Tests
     #needs: build_and_publish
     runs-on: ubuntu-20.04
-#    strategy:
-#      matrix:
-#        system: [ cms, common, lms, openedx ]
-#        shard: [ 1, 2 ]
+    strategy:
+      matrix:
+        system: [ cms, common, openedx ]
+        shard: [ 1, 2, 3 ]
 
     steps:
     - uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
       run: |
         echo TEST_SYSTEM=${{ matrix.system }} >> .env
         echo SHARD=${{ matrix.shard }} >> .env
-        echo SPLITS=2 >> .env
+        echo SPLITS=3 >> .env
         cat .env
         docker-compose --env-file .env -f test.docker-compose.yml up --abort-on-container-exit
       # docker run --env TEST_SYSTEM=${{ matrix.test-system }} --env EDXAPP_TEST_MONGO_HOST="host.docker.internal" ghcr.io/mzulqarnain1/edxapp:testing bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM'
