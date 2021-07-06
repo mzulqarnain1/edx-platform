@@ -60,5 +60,5 @@ jobs:
       env:
         LMS_CFG: lms/envs/bok_choy.yml
       run: |
-        pytest cms
+        pytest common
       #  pytest ${{ matrix.system }} --splits 2 --group ${{ matrix.shard }}

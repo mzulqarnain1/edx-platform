@@ -21,7 +21,7 @@ services:
     # command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && paver test_system -s cms --disable_capture'
     # command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM --splits 3 --group $SHARD'
     #command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest $TEST_SYSTEM --splits $SPLITS --group $SHARD'
-    command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest cms'
+    command: bash -c 'source /edx/app/edxapp/venvs/edxapp/bin/activate && pytest common'
     image: ghcr.io/mzulqarnain1/edxapp:testing
     environment:
       TEST_SYSTEM: ${TEST_SYSTEM:-lms}
